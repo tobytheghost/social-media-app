@@ -62,13 +62,10 @@ const Profile: NextPage<{ username: string }> = ({ username }) => {
 
 export const getStaticProps: GetStaticProps = async (context) => {
   const ssg = generateSSGHelper();
-
   const slug = context.params?.slug;
-
   if (typeof slug !== "string") throw new Error("no slug");
 
   const username = slug.replace("@", "");
-
   await ssg.profile.getUserByUsername.prefetch({ username });
 
   return {

@@ -56,6 +56,9 @@ const addUserDataToPosts = async (posts: Post[]) => {
 };
 
 export const postsRouter = createTRPCRouter({
+  /**
+   * Get all posts
+   */
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
       take: 100,
@@ -69,6 +72,9 @@ export const postsRouter = createTRPCRouter({
     return await addUserDataToPosts(posts);
   }),
 
+  /**
+   * Get a post by id
+   */
   getById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -88,6 +94,9 @@ export const postsRouter = createTRPCRouter({
       return (await addUserDataToPosts([post]))[0];
     }),
 
+  /**
+   * Get all posts by a user
+   */
   getPostsByUserId: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -106,6 +115,9 @@ export const postsRouter = createTRPCRouter({
         .then(addUserDataToPosts);
     }),
 
+  /**
+   * Create a post
+   */
   create: privateProcedure
     .input(postSchema)
     .mutation(async ({ ctx, input }) => {

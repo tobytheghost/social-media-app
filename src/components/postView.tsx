@@ -13,13 +13,15 @@ export const PostView = ({ post, author }: PostWithUser) => {
 
   return (
     <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
-      <Image
-        src={author.profileImageUrl}
-        alt={author.username ?? ""}
-        width={48}
-        height={48}
-        className="h-12 w-12 rounded-full"
-      />
+      <Link href={`/@${author.username}`}>
+        <Image
+          src={author.profileImageUrl}
+          alt={author.username ?? ""}
+          width={48}
+          height={48}
+          className="h-12 w-12 rounded-full"
+        />
+      </Link>
       <div className="flex flex-col">
         <div className="flex gap-2 font-bold text-slate-300">
           <Link href={`/@${author.username}`}>

@@ -33,7 +33,7 @@ const Profile: NextPage<{ username: string }> = ({ username }) => {
     username,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <LoadingPage />;
 
   if (!data) return <div>404</div>;
 

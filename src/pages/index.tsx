@@ -4,9 +4,9 @@ import Image from "next/image";
 import { type RouterOutputs, api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { LoadingPage } from "~/components/Loading";
+import { LoadingPage, LoadingSpinner } from "~/components/Loading";
 import { useState } from "react";
-import { set } from "zod";
+import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime);
 
@@ -20,6 +20,14 @@ const CreatePostWizard = () => {
     onSuccess: async () => {
       setContent("");
       await ctx.posts.getAll.invalidate();
+    },
+    onError: (err) => {
+      const errorMessage = err.data?.zodError?.fieldErrors.content;
+      if (errorMessage?.[0]) {
+        toast.error(errorMessage[0]);
+      } else {
+        toast.error("Something went wrong");
+      }
     },
   });
 
@@ -46,6 +54,11 @@ const CreatePostWizard = () => {
           mutate({ content });
         }}
       />
+      {isPosting && (
+        <div className="flex items-center justify-center">
+          <LoadingSpinner size={20} />
+        </div>
+      )}
     </div>
   );
 };
@@ -84,9 +97,9 @@ const Feed = () => {
   // Return empty div if user and posts are not loaded
   if (!userLoaded && postsLoading) return <div />;
 
-  if (!data) return <div>Something went wrong</div>;
-
   if (!userLoaded) return <LoadingPage size={64} />;
+
+  if (!data) return <div>Something went wrong</div>;
 
   return (
     <div className="flex flex-col">

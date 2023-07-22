@@ -24,6 +24,16 @@ const ratelimit = new Ratelimit({
   analytics: true,
 });
 
+const postSchema = z.object({
+  content: z
+    .string()
+    .emoji({
+      message: "Only emojis are allowed in posts",
+    })
+    .min(1)
+    .max(200),
+});
+
 export const postsRouter = createTRPCRouter({
   getAll: publicProcedure.query(async ({ ctx }) => {
     const posts = await ctx.prisma.post.findMany({
@@ -63,7 +73,7 @@ export const postsRouter = createTRPCRouter({
   }),
 
   create: privateProcedure
-    .input(z.object({ content: z.string().emoji().min(1).max(200) }))
+    .input(postSchema)
     .mutation(async ({ ctx, input }) => {
       const authorId = ctx.userId;
 

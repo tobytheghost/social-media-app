@@ -4,13 +4,12 @@ import Image from "next/image";
 import { type RouterOutputs, api } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingPage } from "~/components/Loading";
 
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const { user, isSignedIn } = useUser();
-
-  console.log(user);
 
   if (!isSignedIn) return null;
 
@@ -35,8 +34,9 @@ type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
 const PostView = ({ post, author }: PostWithUser) => {
   const timeSince = dayjs(post.createdAt).fromNow();
+
   return (
-    <div key={post.id} className="flex gap-3 border-b border-slate-400 p-8">
+    <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
       <Image
         src={author.profileImageUrl}
         alt={author.username ?? ""}
@@ -50,26 +50,41 @@ const PostView = ({ post, author }: PostWithUser) => {
           <span>{" · "}</span>
           <span className="font-thin">{`${timeSince}`}</span>
         </div>
-        <div>{post.content}</div>
+        <div className="text-2xl">{post.content}</div>
       </div>
     </div>
   );
 };
 
+const Feed = () => {
+  const { isLoaded: userLoaded } = useUser();
+
+  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+
+  // Return empty div if user and posts are not loaded
+  if (!userLoaded && postsLoading) return <div />;
+
+  if (!data) return <div>Something went wrong</div>;
+
+  if (!userLoaded) return <LoadingPage size={64} />;
+
+  return (
+    <div className="flex flex-col">
+      {data?.map((fullPost) => (
+        <PostView key={fullPost.post.id} {...fullPost} />
+      ))}
+    </div>
+  );
+};
+
 export default function Home() {
-  const user = useUser();
+  const { isSignedIn, isLoaded: userLoaded } = useUser();
 
-  const { data, isLoading } = api.posts.getAll.useQuery();
+  // Start fetching posts
+  api.posts.getAll.useQuery();
 
-  console.log(data);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!data) {
-    return <div>Something went wrong</div>;
-  }
+  // Return empty div if user is not loaded
+  if (!userLoaded) return <LoadingPage size={64} />;
 
   return (
     <>
@@ -81,18 +96,14 @@ export default function Home() {
       <main className="flex h-screen justify-center">
         <div className="h-full w-full border-x border-slate-400 md:max-w-2xl">
           <div className="flex border-b border-slate-400 p-4">
-            {!user.isSignedIn && (
+            {!isSignedIn && (
               <div className="flex justify-center">
                 <SignInButton />
               </div>
             )}
-            {user.isSignedIn && <CreatePostWizard />}
+            {isSignedIn && <CreatePostWizard />}
           </div>
-          <div className="flex flex-col">
-            {data?.map((fullPost) => (
-              <PostView key={fullPost.post.id} {...fullPost} />
-            ))}
-          </div>
+          <Feed />
         </div>
       </main>
     </>

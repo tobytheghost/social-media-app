@@ -7,7 +7,7 @@ import { api } from "~/utils/api";
 import { createServerSideHelpers } from "@trpc/react-query/server";
 import superjson from "superjson";
 import { PageLayout } from "~/components/layout";
-import { LoadingPage } from "~/components/loading";
+import { LoadingPage } from "~/components/test";
 import { PostView } from "~/components/postView";
 
 const ProfileFeed = (props: { userId: string }) => {

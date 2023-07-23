@@ -1,21 +1,19 @@
 import { useUser } from "@clerk/nextjs";
-import { useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "~/utils/api";
 import { LoadingSpinner } from "./loading";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { type FormEvent } from "react";
 
 export const CreatePostWizard = () => {
   const { user, isSignedIn } = useUser();
-  const [content, setContent] = useState("");
+  const { register, reset, handleSubmit } = useForm<{ content: string }>();
 
   const ctx = api.useContext();
 
   const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: async () => {
-      setContent("");
-      await ctx.posts.getAll.invalidate();
-    },
+    onSuccess: async () => await ctx.posts.getAll.invalidate(),
     onError: (err) => {
       const errorMessage = err.data?.zodError?.fieldErrors.content;
       if (errorMessage?.[0]) {
@@ -24,12 +22,19 @@ export const CreatePostWizard = () => {
         toast.error("Something went wrong");
       }
     },
+    onSettled: () => reset({ content: "" }),
   });
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    void handleSubmit((data) => {
+      mutate(data);
+    })(event);
+  };
 
   if (!isSignedIn) return null;
 
   return (
-    <div className="flex w-full gap-3">
+    <form className="flex w-full gap-3" onSubmit={onSubmit}>
       <Image
         src={user.profileImageUrl}
         alt={user.fullName ?? ""}
@@ -39,21 +44,19 @@ export const CreatePostWizard = () => {
       />
       <input
         placeholder="Type some emojis!"
-        className="grow bg-transparent outline-none"
+        className="grow bg-transparent"
         type="text"
-        value={content}
         disabled={isPosting}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyUp={(e) => {
-          if (e.key !== "Enter") return;
-          mutate({ content });
-        }}
+        {...register("content")}
       />
       {isPosting && (
         <div className="flex items-center justify-center">
           <LoadingSpinner size={20} />
         </div>
       )}
-    </div>
+      <button className="" type="submit" disabled={isPosting}>
+        Post
+      </button>
+    </form>
   );
 };

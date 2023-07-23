@@ -8,7 +8,7 @@ dayjs.extend(relativeTime);
 
 type PostWithUser = RouterOutputs["posts"]["getAll"][number];
 
-const AuthorImage = ({ src, alt }: { src: string; alt: string }) => {
+const PostAuthorImage = ({ src, alt }: { src: string; alt: string }) => {
   return (
     <Image
       src={src}
@@ -27,13 +27,13 @@ export const PostView = ({ post, author }: PostWithUser) => {
     <div key={post.id} className="flex gap-3 border-b border-slate-400 p-4">
       {author.username ? (
         <Link href={`/@${author.username}`}>
-          <AuthorImage
+          <PostAuthorImage
             src={author.profileImageUrl}
             alt={author.username ?? ""}
           />
         </Link>
       ) : (
-        <AuthorImage
+        <PostAuthorImage
           src={author.profileImageUrl}
           alt={`${author.firstName}_${author.lastName}` ?? ""}
         />

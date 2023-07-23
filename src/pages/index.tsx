@@ -1,94 +1,18 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
-import Image from "next/image";
 import { api } from "~/utils/api";
-import { LoadingPage, LoadingSpinner } from "~/components/loading";
-import { useState } from "react";
-import toast from "react-hot-toast";
+import { LoadingPage } from "~/components/loading";
 import { PageLayout } from "~/components/layout";
-import { PostView } from "~/components/postView";
-
-const CreatePostWizard = () => {
-  const { user, isSignedIn } = useUser();
-  const [content, setContent] = useState("");
-
-  const ctx = api.useContext();
-
-  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
-    onSuccess: async () => {
-      setContent("");
-      await ctx.posts.getAll.invalidate();
-    },
-    onError: (err) => {
-      const errorMessage = err.data?.zodError?.fieldErrors.content;
-      if (errorMessage?.[0]) {
-        toast.error(errorMessage[0]);
-      } else {
-        toast.error("Something went wrong");
-      }
-    },
-  });
-
-  if (!isSignedIn) return null;
-
-  return (
-    <div className="flex w-full gap-3">
-      <Image
-        src={user.profileImageUrl}
-        alt={user.fullName ?? ""}
-        width={56}
-        height={56}
-        className="h-14 w-14 rounded-full"
-      />
-      <input
-        placeholder="Type some emojis!"
-        className="grow bg-transparent outline-none"
-        type="text"
-        value={content}
-        disabled={isPosting}
-        onChange={(e) => setContent(e.target.value)}
-        onKeyUp={(e) => {
-          if (e.key !== "Enter") return;
-          mutate({ content });
-        }}
-      />
-      {isPosting && (
-        <div className="flex items-center justify-center">
-          <LoadingSpinner size={20} />
-        </div>
-      )}
-    </div>
-  );
-};
-
-const Feed = () => {
-  const { isLoaded: userLoaded } = useUser();
-
-  const { data, isLoading: postsLoading, error } = api.posts.getAll.useQuery();
-
-  // Return empty div if user and posts are not loaded
-  if (!userLoaded && postsLoading) return <div />;
-
-  if (!userLoaded || !data) return <LoadingPage size={64} />;
-
-  if (error) return <div>Something went wrong</div>;
-
-  return (
-    <div className="flex flex-col">
-      {data?.map((fullPost) => (
-        <PostView key={fullPost.post.id} {...fullPost} />
-      ))}
-    </div>
-  );
-};
+import { CreatePostWizard } from "~/components/createPostWizard";
+import { Feed } from "~/components/feed";
 
 export default function Home() {
   const { isSignedIn, isLoaded: userLoaded } = useUser();
 
-  // Start fetching posts
+  // Start fetching posts for feed
   api.posts.getAll.useQuery();
 
-  // Return empty div if user is not loaded
+  // Return loading state if user is not loaded
   if (!userLoaded) return <LoadingPage size={64} />;
 
   return (

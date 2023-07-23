@@ -8,7 +8,7 @@ import { PostView } from "~/components/postView";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const ProfileFeed = (props: { userId: string }) => {
-  const { data, isLoading } = api.posts.getPostsByUserId.useQuery({
+  const { data, isLoading } = api.posts.getByUserId.useQuery({
     userId: props.userId,
   });
 

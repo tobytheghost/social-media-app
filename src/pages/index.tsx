@@ -64,14 +64,14 @@ const CreatePostWizard = () => {
 const Feed = () => {
   const { isLoaded: userLoaded } = useUser();
 
-  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+  const { data, isLoading: postsLoading, error } = api.posts.getAll.useQuery();
 
   // Return empty div if user and posts are not loaded
   if (!userLoaded && postsLoading) return <div />;
 
-  if (!userLoaded) return <LoadingPage size={64} />;
+  if (!userLoaded || !data) return <LoadingPage size={64} />;
 
-  if (!data) return <div>Something went wrong</div>;
+  if (error) return <div>Something went wrong</div>;
 
   return (
     <div className="flex flex-col">

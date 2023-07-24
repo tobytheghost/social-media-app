@@ -17,6 +17,20 @@ model Post {
     updatedAt DateTime @updatedAt
     content   String   @db.VarChar(255)
     authorId  String
+    replies   Reply[]
 
     @@index([authorId])
+}
+
+model Reply {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    content   String   @db.VarChar(255)
+    authorId  String
+    postId    String
+    post      Post     @relation(fields: [postId], references: [id])
+
+    @@index([authorId])
+    @@index([postId])
 }

@@ -5,6 +5,8 @@ import { PageLayout } from "~/components/layout";
 import { LoadingPage } from "~/components/loading";
 import { PostView } from "~/components/postView";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
+import { CreateReplyWizard } from "~/components/createReplyWizard";
+import { RepliesFeed } from "~/components/feed";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
   const { data, isLoading } = api.posts.getById.useQuery({
@@ -21,6 +23,10 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
       </Head>
       <PageLayout>
         <PostView post={data.post} author={data.author} />
+        <div className="border-b border-slate-400 p-4">
+          <CreateReplyWizard postId={id} />
+        </div>
+        <RepliesFeed postId={id} />
       </PageLayout>
     </>
   );

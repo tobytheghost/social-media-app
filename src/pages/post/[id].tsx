@@ -7,8 +7,10 @@ import { PostView } from "~/components/postView";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 import { CreateReplyWizard } from "~/components/createReplyWizard";
 import { RepliesFeed } from "~/components/feed";
+import { SignInButton, useUser } from "@clerk/nextjs";
 
 const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
+  const { isSignedIn } = useUser();
   const { data, isLoading } = api.posts.getById.useQuery({
     id,
   });
@@ -24,7 +26,11 @@ const SinglePostPage: NextPage<{ id: string }> = ({ id }) => {
       <PageLayout>
         <PostView post={data.post} author={data.author} />
         <div className="border-b border-slate-400 p-4">
-          <CreateReplyWizard postId={id} />
+          {isSignedIn ? (
+            <CreateReplyWizard postId={id} />
+          ) : (
+            <SignInButton>Sign in to reply ...</SignInButton>
+          )}
         </div>
         <RepliesFeed postId={id} />
       </PageLayout>

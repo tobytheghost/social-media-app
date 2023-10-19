@@ -13,6 +13,6 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: tobytheghost/pr-auto-label-action@1.0.7
+      - uses: tobytheghost/pr-auto-label-action@1.0.8
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

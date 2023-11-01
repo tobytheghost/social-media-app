@@ -1,5 +1,4 @@
 name: PR test
-
 on:
   pull_request:
     types:
@@ -8,9 +7,6 @@ on:
       - synchronize
       - labeled
       - unlabeled
-
-vars:
-  
 jobs:
   check_pr_size:
     runs-on: ubuntu-latest

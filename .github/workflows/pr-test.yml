@@ -16,4 +16,4 @@ jobs:
       - uses: tobytheghost/pr-auto-label-action@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          IGNORED_FILES: test.md package-lock.json
+          IGNORED_FILES: package-lock.json

@@ -13,6 +13,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: tobytheghost/pr-auto-label-action@1.0.0
+      - uses: tobytheghost/pr-auto-label-action@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORED_FILES: package-lock.json

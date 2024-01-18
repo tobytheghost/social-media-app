@@ -1,4 +1,4 @@
-name: PR size check
+name: PR test
 on:
   pull_request:
     types:
@@ -13,6 +13,7 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: kkohtaka/gh-actions-pr-size@v1.0.0
+      - uses: tobytheghost/pr-auto-rfc@main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          IGNORED_FILES: package-lock.json
